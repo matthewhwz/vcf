@@ -3,57 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>联络人一键导入</title>
+    <title>联络人导入</title>
     <style>
-        :root { --ios-blue: #007AFF; }
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: #f2f2f7; margin: 0; display: flex; flex-direction: column; align-items: center; padding: 20px;
+        body { font-family: -apple-system, sans-serif; text-align: center; padding: 50px 20px; background: #f2f2f7; }
+        .btn { 
+            background: #007AFF; color: white; padding: 15px 30px; 
+            text-decoration: none; border-radius: 12px; font-weight: bold;
+            display: inline-block; cursor: pointer; border: none; font-size: 18px;
         }
-        .container {
-            background: white; width: 100%; max-width: 400px; border-radius: 20px;
-            padding: 30px 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); text-align: center; margin-top: 50px;
-        }
-        h1 { font-size: 22px; color: #1c1c1e; margin-bottom: 8px; }
-        p { color: #8e8e93; font-size: 15px; line-height: 1.4; margin-bottom: 25px; }
-        
-        .download-btn {
-            display: inline-block; background-color: var(--ios-blue); color: white;
-            text-decoration: none; padding: 16px 40px; border-radius: 12px;
-            font-size: 18px; font-weight: 600; transition: transform 0.2s;
-        }
-        .download-btn:active { transform: scale(0.96); opacity: 0.9; }
-
-        /* 引导提示区 */
-        .tip-box {
-            margin-top: 30px; padding: 15px; background: #fff9db;
-            border-left: 4px solid #fcc419; border-radius: 8px; text-align: left;
-        }
-        .tip-title { font-weight: bold; color: #856404; font-size: 14px; margin-bottom: 5px; }
-        .tip-content { font-size: 13px; color: #856404; line-height: 1.6; }
-        .highlight { color: var(--ios-blue); font-weight: bold; }
+        .guide { margin-top: 30px; text-align: left; max-width: 300px; margin-left: auto; margin-right: auto; font-size: 14px; color: #666; }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1>批量导入联络人</h1>
-        <p>点击下方按钮下载通讯录文件<br>支持安卓及苹果系统</p>
+    <h2>同步办公通讯录</h2>
+    <p>点击下方按钮开始下载</p>
 
-        <a href="contacts.vcf" class="download-btn" download="contacts.vcf">
-            立即下载
-        </a>
+    <button id="downloadBtn" class="btn">立即导入联系人</button>
 
-        <div class="tip-box">
-            <div class="tip-title">⚠️ iPhone 导入说明：</div>
-            <div class="tip-content">
-                下载后若只显示一个名字，请进行以下操作：<br>
-                1. 点击预览页下方的 <span class="highlight">“分享”按钮</span> (向上箭头图标)。<br>
-                2. 在列表中点击 <span class="highlight">“通讯录”</span> 图标。<br>
-                3. 在弹出的界面中点击右上角的 <span class="highlight">“存储全部”</span>。
-            </div>
-        </div>
+    <div class="guide">
+        <strong>iPhone 特别提示：</strong><br>
+        1. 下载后若进入预览页，点击底部的 <b>“分享”</b> 图标。<br>
+        2. 在列表中找到并选择 <b>“通讯录”</b>。<br>
+        3. 点击右上角的 <b>“存储全部”</b>。
     </div>
 
+    <script>
+        document.getElementById('downloadBtn').onclick = async function() {
+            try {
+                // 1. 获取同级目录下的 vcf 文件
+                const response = await fetch('contacts.vcf');
+                const text = await response.text();
+                
+                // 2. 转换为 Blob，强制使用字节流类型，诱导系统弹出“下载”而非直接预览
+                const blob = new Blob([text], { type: 'application/octet-stream' });
+                const url = window.URL.createObjectURL(blob);
+                
+                // 3. 模拟点击下载
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'contacts.vcf';
+                document.body.appendChild(a);
+                a.click();
+                
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+            } catch (err) {
+                alert('下载失败，请尝试刷新页面');
+            }
+        };
+    </script>
 </body>
 </html>
