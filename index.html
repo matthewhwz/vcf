@@ -3,51 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>通讯录批量导入</title>
+    <title>联络人一键导入</title>
     <style>
-        body { font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; background: #f0f2f5; }
-        .btn { background: #007aff; color: white; border: none; padding: 15px 30px; font-size: 18px; border-radius: 10px; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .btn:active { background: #0056b3; }
+        :root { --ios-blue: #007AFF; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #f2f2f7; margin: 0; display: flex; flex-direction: column; align-items: center; padding: 20px;
+        }
+        .container {
+            background: white; width: 100%; max-width: 400px; border-radius: 20px;
+            padding: 30px 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); text-align: center; margin-top: 50px;
+        }
+        h1 { font-size: 22px; color: #1c1c1e; margin-bottom: 8px; }
+        p { color: #8e8e93; font-size: 15px; line-height: 1.4; margin-bottom: 25px; }
+        
+        .download-btn {
+            display: inline-block; background-color: var(--ios-blue); color: white;
+            text-decoration: none; padding: 16px 40px; border-radius: 12px;
+            font-size: 18px; font-weight: 600; transition: transform 0.2s;
+        }
+        .download-btn:active { transform: scale(0.96); opacity: 0.9; }
+
+        /* 引导提示区 */
+        .tip-box {
+            margin-top: 30px; padding: 15px; background: #fff9db;
+            border-left: 4px solid #fcc419; border-radius: 8px; text-align: left;
+        }
+        .tip-title { font-weight: bold; color: #856404; font-size: 14px; margin-bottom: 5px; }
+        .tip-content { font-size: 13px; color: #856404; line-height: 1.6; }
+        .highlight { color: var(--ios-blue); font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <button class="btn" onclick="exportMultiVcf()">点击：保存全部 3 个联系人</button>
+    <div class="container">
+        <h1>批量导入联络人</h1>
+        <p>点击下方按钮下载通讯录文件<br>支持安卓及苹果系统</p>
 
-    <script>
-        function exportMultiVcf() {
-            // 1. 定义数据
-            const contacts = [
-                { name: "测试-张三", tel: "13800138001" },
-                { name: "测试-李四", tel: "13800138002" },
-                { name: "测试-王五", tel: "13800138003" }
-            ];
+        <a href="contacts.vcf" class="download-btn" download="contacts.vcf">
+            立即下载
+        </a>
 
-            // 2. 构造 VCF 字符串
-            // 关键点：必须使用 \r\n 换行，必须包含 N 字段，必须声明 CHARSET
-            let vcfString = "";
-            contacts.forEach(c => {
-                vcfString += "BEGIN:VCARD\r\n";
-                vcfString += "VERSION:3.0\r\n";
-                vcfString += `FN;CHARSET=UTF-8:${c.name}\r\n`;
-                vcfString += `N;CHARSET=UTF-8:${c.name};;;;\r\n`; // iOS 识别多联系人的核心
-                vcfString += `TEL;TYPE=CELL:${c.tel}\r\n`;
-                vcfString += "END:VCARD\r\n";
-            });
+        <div class="tip-box">
+            <div class="tip-title">⚠️ iPhone 导入说明：</div>
+            <div class="tip-content">
+                下载后若只显示一个名字，请进行以下操作：<br>
+                1. 点击预览页下方的 <span class="highlight">“分享”按钮</span> (向上箭头图标)。<br>
+                2. 在列表中点击 <span class="highlight">“通讯录”</span> 图标。<br>
+                3. 在弹出的界面中点击右上角的 <span class="highlight">“存储全部”</span>。
+            </div>
+        </div>
+    </div>
 
-            // 3. 将字符串转为 Base64 编码
-            // 这是为了解决部分移动端浏览器不识别 Blob URL 的问题
-            const base64Vcf = btoa(unescape(encodeURIComponent(vcfString)));
-            const dataUrl = 'data:text/vcard;base64,' + base64Vcf;
-
-            // 4. 触发下载
-            const link = document.createElement('a');
-            link.href = dataUrl;
-            link.download = 'contacts.vcf';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-    </script>
 </body>
 </html>
